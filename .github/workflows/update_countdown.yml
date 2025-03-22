@@ -1,0 +1,34 @@
+name: Update Countdown
+
+on:
+  # 定时触发：这里设置为每 30 分钟执行一次，可根据需要修改 cron 表达式
+  schedule:
+    - cron: '*/30 * * * *'
+  # 手动触发（可选）
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      # 检出代码
+      - uses: actions/checkout@v3
+
+      # 设置 Python 环境
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      # 运行 countdown.py 脚本更新 README
+      - name: Run countdown update script
+        run: python countdown.py
+
+      # 提交并推送 README 修改（如果有改动）
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "chore: update countdown" || echo "No changes to commit"
+          git push
